@@ -14,7 +14,22 @@
 		F0E492D62C0911F600355168 /* Base in Resources */ = {isa = PBXBuildFile; fileRef = F0E492D52C0911F600355168 /* Base */; };
 		F0E492D92C0911F600355168 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E492D82C0911F600355168 /* main.m */; };
 		F0E492E22C09124500355168 /* tinyrenderer.c in Sources */ = {isa = PBXBuildFile; fileRef = F0E492E12C09124500355168 /* tinyrenderer.c */; };
+		F0E492E72C0A74B200355168 /* african_head.obj in CopyFiles */ = {isa = PBXBuildFile; fileRef = F0E492E52C0A74A400355168 /* african_head.obj */; };
+		F0E492EA2C0A74D300355168 /* models.m in Sources */ = {isa = PBXBuildFile; fileRef = F0E492E92C0A74D300355168 /* models.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F0E492E62C0A74AD00355168 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				F0E492E72C0A74B200355168 /* african_head.obj in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F0E492C62C0911F500355168 /* tinyrenderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tinyrenderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,6 +45,9 @@
 		F0E492DA2C0911F600355168 /* tinyrenderer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tinyrenderer.entitlements; sourceTree = "<group>"; };
 		F0E492E02C09124500355168 /* tinyrenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyrenderer.h; sourceTree = "<group>"; };
 		F0E492E12C09124500355168 /* tinyrenderer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tinyrenderer.c; sourceTree = "<group>"; };
+		F0E492E52C0A74A400355168 /* african_head.obj */ = {isa = PBXFileReference; lastKnownFileType = text; path = african_head.obj; sourceTree = "<group>"; };
+		F0E492E82C0A74D300355168 /* models.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = models.h; sourceTree = "<group>"; };
+		F0E492E92C0A74D300355168 /* models.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = models.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +80,8 @@
 		F0E492C82C0911F500355168 /* tinyrenderer */ = {
 			isa = PBXGroup;
 			children = (
+				F0E492E82C0A74D300355168 /* models.h */,
+				F0E492E92C0A74D300355168 /* models.m */,
 				F0E492C92C0911F500355168 /* AppDelegate.h */,
 				F0E492CA2C0911F500355168 /* AppDelegate.m */,
 				F0E492CC2C0911F500355168 /* Document.h */,
@@ -69,6 +89,7 @@
 				F0E492E02C09124500355168 /* tinyrenderer.h */,
 				F0E492E12C09124500355168 /* tinyrenderer.c */,
 				F0E492CF2C0911F500355168 /* Document.xib */,
+				F0E492E52C0A74A400355168 /* african_head.obj */,
 				F0E492D22C0911F600355168 /* Assets.xcassets */,
 				F0E492D42C0911F600355168 /* MainMenu.xib */,
 				F0E492D72C0911F600355168 /* Info.plist */,
@@ -88,6 +109,7 @@
 				F0E492C22C0911F500355168 /* Sources */,
 				F0E492C32C0911F500355168 /* Frameworks */,
 				F0E492C42C0911F500355168 /* Resources */,
+				F0E492E62C0A74AD00355168 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -151,6 +173,7 @@
 				F0E492CE2C0911F500355168 /* Document.m in Sources */,
 				F0E492D92C0911F600355168 /* main.m in Sources */,
 				F0E492E22C09124500355168 /* tinyrenderer.c in Sources */,
+				F0E492EA2C0A74D300355168 /* models.m in Sources */,
 				F0E492CB2C0911F500355168 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

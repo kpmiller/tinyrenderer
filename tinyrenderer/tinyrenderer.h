@@ -14,20 +14,20 @@ typedef struct TRColor {
     float r, g, b, a;
 } TRColor;
 
-typedef struct TRcontext {
+typedef struct TRContext {
     int     changed;
     int     width;
     int     height;
     TRColor clearcolor;
     TRColor color;
     uint8_t *data;
-} TRcontext;
+} TRContext;
 
-TRcontext * CreateTinyRenderer(int width, int height);
-void SetClearColor(TRcontext *tr, float r, float g, float b, float a);
-void SetColor(TRcontext *tr, float r, float g, float b, float a);
-void Clear(TRcontext *tr);
-void Clear(TRcontext *tr);
-void Draw(TRcontext *ctx);
+TRContext * CreateTinyRenderer(int width, int height);
+void SetClearColor(TRContext *tr, float r, float g, float b, float a);
+void SetColor(TRContext *tr, float r, float g, float b, float a);
+void Clear(TRContext *tr);
+void Clear(TRContext *tr);
+void Draw(TRContext *ctx);
 
 #endif /* tinyrenderer_h */

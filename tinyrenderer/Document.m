@@ -10,7 +10,7 @@
 
 @interface Document ()
 
-@property TRcontext *ctx;
+@property TRContext *ctx;
 @property NSTimer *timer;
 @property (atomic) bool updating;
 
@@ -43,8 +43,6 @@
 //    });
      */
     
-    SetClearColor(self.ctx, 0.0, 0.2, 0.3, 1.0);
-    Clear(self.ctx);
     Draw(self.ctx);
     self.ctx->changed = 1;
     [self updateImage];
