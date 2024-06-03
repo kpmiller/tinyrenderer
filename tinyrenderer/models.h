@@ -9,28 +9,21 @@
 #define models_h
 
 #include <stdio.h>
-
-typedef struct TRMIvec3 {
-    int v, t, n;
-} TRMIvec3;
-
-typedef struct TRMFvec3 {
-    float x, y, z;
-} TRMFvec3;
+#include "tinyrenderer.h"
 
 typedef struct TRModel {
     int   numFaces;
 
     int    vtxcount;
-    TRMFvec3 *vtx;
+    TRVec3f *vtx;
     int   *vtxidx;
 
     int    texcount;
-    TRMFvec3 *tex;
+    TRVec3f *tex;
     int   *texidx;
 
     int    nrmcount;
-    TRMFvec3 *nrm;
+    TRVec3f *nrm;
     int   *nrmidx;
 } TRModel;
 

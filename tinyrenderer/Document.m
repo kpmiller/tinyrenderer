@@ -22,7 +22,7 @@
     self = [super init];
     if (self) {
     }
-    self.ctx = CreateTinyRenderer(1024,512);
+    self.ctx = CreateTinyRenderer(800,800);
     self.updating = NO;
     return self;
 }
@@ -91,15 +91,21 @@
     uint8_t *pixels = (uint8_t*) malloc(w*h*4);
     memset(pixels, 0x334455FF, w*h*4);
     uint8_t *p = pixels;
-    float *f = (float*) self.ctx->data;
-    for (int II=0 ; II < (w*h); II++)
+    float *fb = (float*) self.ctx->data;
+    
+    //y-flip here
+    for (int JJ = h-1; JJ>=0; JJ--)
     {
-        p[0] = (uint8_t) (f[0] * 255.0);
-        p[1] = (uint8_t) (f[1] * 255.0);
-        p[2] = (uint8_t) (f[2] * 255.0);
-        p[3] = (uint8_t) (f[3] * 255.0);
-        p+=4;
-        f+=4;
+        float *f = &fb[JJ*w*4];
+        for (int II=0; II < w; II++)
+        {
+            p[0] = (uint8_t) (f[0] * 255.0);
+            p[1] = (uint8_t) (f[1] * 255.0);
+            p[2] = (uint8_t) (f[2] * 255.0);
+            p[3] = (uint8_t) (f[3] * 255.0);
+            p+=4;
+            f+=4;
+        }
     }
 
     //convert from RTImage (float rgb packed) to UIImage

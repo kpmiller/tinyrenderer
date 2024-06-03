@@ -12,6 +12,14 @@
 #include <math.h>
 #include "models.h"
 
+#define RED() {SetColor(tr, 1.0, 0.0, 0.0, 1.0);}
+#define GREEN() {SetColor(tr, 0.0, 1.0, 0.0, 1.0);}
+#define BLUE() {SetColor(tr, 0.0, 0.0, 1.0, 1.0);}
+#define WHITE() {SetColor(tr, 1.0, 1.0, 1.0, 1.0);}
+#define LTGRAY() {SetColor(tr, 0.85, 0.85, 0.85, 1.0);}
+#define DKGRAY() {SetColor(tr, 0.4, 0.4, 0.4, 1.0);}
+#define BLACK() {SetColor(tr, 0.0, 0.0, 0.0, 1.0);}
+
 TRContext * CreateTinyRenderer(int width, int height)
 {
     TRContext *tr = (TRContext*) malloc((size_t) sizeof(TRContext));
@@ -136,6 +144,126 @@ void Line( TRContext *tr, int x0, int y0, int x1, int y1 )
     }
 }
 
+TRVec3f cross(TRVec3f v1, TRVec3f v2)
+{
+    TRVec3f r;
+    
+    r.x = v1.y*v2.z - v1.z*v2.y;
+    r.y = v1.z*v2.x - v1.x*v2.z;
+    r.z = v1.x*v2.y - v1.y*v2.x;
+
+    return r;
+}
+
+float magnitude(TRVec3f *v)
+{
+    return sqrtf(v->x*v->x + v->y*v->y + v->z*v->z);
+}
+
+void normalize(TRVec3f *v)
+{
+    float mag = magnitude(v);
+    v->x = v->x / mag;
+    v->y = v->y / mag;
+    v->z = v->z / mag;
+}
+
+float dot3(TRVec3f a, TRVec3f b)
+{
+    return (a.x * b.x + a.y * b.y + a.z * b.z);
+}
+
+void barycentric(TRVec2i v0, TRVec2i v1, TRVec2i v2, TRVec2i point, TRVec3f *b)
+{
+    TRVec3f i = { v2.x-v0.x, v1.x-v0.x, v0.x - point.x};
+    TRVec3f j = { v2.y-v0.y, v1.y-v0.y, v0.y - point.y};
+    TRVec3f u = cross(i,j);
+    if (fabsf(u.z) < 1.0)
+    {
+        b->x = -1.0;
+    }
+    else
+    {
+        b->x = 1.0f - (u.x+u.y) / u.z;
+        b->y = u.y/u.z;
+        b->z = u.x/u.z;
+    }
+}
+
+void Triangle(TRContext *tr, TRVec2i vv0, TRVec2i vv1, TRVec2i vv2, int wireframe )
+{
+    if (vv0.y==vv1.y && vv0.y==vv2.y) return; // i dont care about degenerate triangles
+
+    TRVec2i v[3] = {vv0, vv1, vv2};
+    //sort verts
+    
+    if (v[0].y > v[1].y) {TRVec2i t = v[1]; v[1] = v[0]; v[0] = t;}
+    if (v[1].y > v[2].y) {TRVec2i t = v[2]; v[2] = v[1]; v[1] = t;}
+    if (v[0].y > v[1].y) {TRVec2i t = v[1]; v[1] = v[0]; v[0] = t;}
+
+#define MAX(XX, YY) (XX > YY ? XX : YY)
+#define MIN(XX, YY) (XX < YY ? XX : YY)
+
+    if (wireframe)
+    {
+        RED();
+        Line(tr, v[0].x, v[0].y, v[1].x, v[1].y);
+        GREEN();
+        Line(tr, v[1].x, v[1].y, v[2].x, v[2].y);
+        Line(tr, v[2].x, v[2].y, v[0].x, v[0].y);
+        //find bounding box
+        TRVec2i bb0 = v[0], bb1=v[0];
+        bb0.x = MIN(bb0.x, v[1].x); bb0.x = MIN(bb0.x, v[2].x);
+        bb1.x = MAX(bb0.x, v[1].x); bb1.x = MAX(bb1.x, v[2].x);
+        bb0.y = MIN(bb0.y, v[1].y); bb0.y = MIN(bb0.y, v[2].y);
+        bb1.y = MAX(bb1.y, v[1].y); bb1.y = MAX(bb1.y, v[2].y);
+#ifdef BOUNDING_BOX
+        WHITE();
+        Line (tr, bb0.x, bb0.y, bb1.x, bb0.y);
+        Line (tr, bb1.x, bb0.y, bb1.x, bb1.y);
+        Line (tr, bb0.x, bb1.y, bb1.x, bb1.y);
+        Line (tr, bb0.x, bb1.y, bb0.x, bb0.y);
+#endif
+
+    }
+    else
+    {
+        //find bounding box
+        TRVec2i bb0 = v[0], bb1=v[0];
+        bb0.x = MIN(bb0.x, v[1].x); bb0.x = MIN(bb0.x, v[2].x);
+        bb1.x = MAX(bb1.x, v[1].x); bb1.x = MAX(bb1.x, v[2].x);
+        bb0.y = MIN(bb0.y, v[1].y); bb0.y = MIN(bb0.y, v[2].y);
+        bb1.y = MAX(bb1.y, v[1].y); bb1.y = MAX(bb1.y, v[2].y);
+
+//        printf("%d %d   %d %d   %d %d\n", v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y);
+//        printf("bbox: %d %d   %d %d\n", bb0.x, bb0.y, bb1.x, bb1.y);
+
+        for (int JJ=bb0.y; JJ<bb1.y; JJ++)
+        {
+            for (int II=bb0.x; II<bb1.x; II++)
+            {
+                TRVec3f bc;
+                TRVec2i p = {II, JJ};
+                barycentric(v[0], v[1], v[2], p, &bc);
+                if ((bc.x < 0) || (bc.y < 0) || (bc.z < 0))
+                {
+//                    printf("out: %d %d  %f %f %f\n", II, JJ, bc.x, bc.y, bc.z);
+                    continue;
+                }
+//                printf("in: %d %d  %f %f %f\n", II, JJ, bc.x, bc.y, bc.z);
+                SetPixel(tr, II, JJ);
+            }
+        }
+#ifdef BOUNDING_BOX
+        SetColor(tr, 1.0, 0.0, 1.0, 1.0);
+        SetPixel(tr, bb0.x, bb0.y);
+        SetPixel(tr, bb1.x, bb0.y);
+        SetPixel(tr, bb1.x, bb1.y);
+        SetPixel(tr, bb0.x, bb1.y);
+#endif
+    }
+}
+
 
 # pragma mark Draw
 
@@ -191,9 +319,9 @@ void WireframeHead(TRContext *tr)
         int i2 = m.vtxidx[II*3+1];
         int i3 = m.vtxidx[II*3+2];
 
-        TRMFvec3 v0 = m.vtx[i1];
-        TRMFvec3 v1 = m.vtx[i2];
-        TRMFvec3 v2 = m.vtx[i3];
+        TRVec3f v0 = m.vtx[i1];
+        TRVec3f v1 = m.vtx[i2];
+        TRVec3f v2 = m.vtx[i3];
 
         Line(tr, xoffset + ((v0.x + 1.0) * xscale), yoffset + ((v0.y + 1.0) * yscale),
              xoffset + ((v1.x + 1.0) * xscale), yoffset + ((v1.y + 1.0) * yscale));
@@ -208,7 +336,135 @@ void WireframeHead(TRContext *tr)
     DestroyModel(&m);
 }
 
-void Draw(TRContext *tr)
+void BareTriangle(TRContext *tr, int x0, int y0, int x1, int y1, int x2, int y2)
 {
-    WireframeHead(tr);
+    TRVec2i a = {x0, y0};
+    TRVec2i b = {x1, y1};
+    TRVec2i c = {x2, y2};
+    Triangle(tr, a, b, c, 0);
+}
+
+void SimpleTriangles(TRContext *tr)
+{
+    Clear(tr);
+    RED();
+    BareTriangle(tr, 10, 70, 50, 160, 70, 80);
+    WHITE();
+    BareTriangle(tr, 180, 50, 150, 1, 70, 180);
+    GREEN();
+    BareTriangle(tr, 180, 150, 120, 160, 130, 180);
+
+}
+
+void PrintVec2i(TRVec2i v)
+{
+    printf("%d,%d,", v.x, v.y);
+}
+
+void PrintVec3f(TRVec3f v)
+{
+    printf("%f,%f,%f,", v.x, v.y, v.z);
+}
+
+void FakeLitHead(TRContext *tr)
+{
+    TRModel m = {};
+
+    Clear(tr);
+
+    LoadModel(&m, "african_head.obj");
+
+    float xoffset = 0.0f;
+    float xscale  = tr->width / 2.0f;
+    float yoffset = 0.0f;
+    float yscale  = tr->height / 2.0f;
+
+    TRVec3f light_dir = {0,0,-1};
+
+//    printf("vtx,sc0.x,sc0.y,w0.x,w0.y,w0.z,sc1.x,sc1.y,w1.x,w1.y,w1.z,sc2.x,sc2.y,w2.x,w2.y,w2.z,");
+//    printf("c0.x,c0.y,c0.z,n0.x,n0.y,n0.z,intensity\n");
+    for (int II=0; II < m.numFaces; II++)
+    {
+//        printf("%d,", II);
+        int idx[3] = {m.vtxidx[II*3], m.vtxidx[II*3+1], m.vtxidx[II*3+2]};
+
+        TRVec3f world_coords[3];
+        TRVec2i screen_coords[3];
+        
+        for (int JJ=0; JJ<3; JJ++)
+        {
+            TRVec3f v = m.vtx[idx[JJ]];
+            screen_coords[JJ].x = (xoffset + ((v.x + 1.0f) * xscale));
+            screen_coords[JJ].y = (yoffset + ((v.y + 1.0f) * yscale));
+            world_coords[JJ] = v;
+//            PrintVec2i(screen_coords[JJ]);
+//            PrintVec3f(world_coords[JJ]);
+        }
+        
+        TRVec3f n;
+        {
+            TRVec3f a = {world_coords[2].x - world_coords[0].x,
+                         world_coords[2].y - world_coords[0].y,
+                         world_coords[2].z - world_coords[0].z
+            };
+            TRVec3f b = {world_coords[1].x - world_coords[0].x,
+                         world_coords[1].y - world_coords[0].y,
+                         world_coords[1].z - world_coords[0].z
+            };
+            n = cross(a, b);
+        }
+//        PrintVec3f(n);
+        normalize(&n);
+//        PrintVec3f(n);
+        float c = dot3(n, light_dir);
+//        printf("%f\n", c);
+        //this is effectively back-face culling
+        if (c > 0.0f)
+        {
+            SetColor(tr, c, c, c, 1.0);
+            Triangle(tr, screen_coords[0], screen_coords[1], screen_coords[2], 0);
+        }
+    }
+
+
+    DestroyModel(&m);
+}
+
+void TriangleTest(TRContext *tr)
+{
+    int x = 5, y = 5;
+    Clear(tr);
+    RED();
+    int ycnt = 0, xcnt;
+    while (y < tr->height)
+    {
+        x = 0;
+        xcnt = 0;
+        while (x < tr->width)
+        {
+            TRVec2i a = {x + (random()&0x3f), y + (random()&0x3f)};
+            TRVec2i b = {x + (random()&0x3f), y + (random()&0x3f)};
+            TRVec2i c = {x + (random()&0x3f), y + (random()&0x3f)};
+            
+//            if ((xcnt == 3) && (ycnt==0))
+                Triangle(tr, a, b, c, 0);
+            
+            printf("(%d, %d)  ", xcnt, ycnt);
+            PrintVec2i(a);
+            PrintVec2i(b);
+            PrintVec2i(c);
+            printf("\n");
+
+            x += 70;
+            xcnt++;
+        }
+        y += 70;
+        ycnt++;
+    }
+}
+
+void Draw(TRContext *ctx)
+{
+//    TriangleTest(ctx);
+    FakeLitHead(ctx);
 }

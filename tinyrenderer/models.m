@@ -11,6 +11,12 @@
 #include <strings.h>
 #include <Cocoa/Cocoa.h>
 
+
+typedef struct TRMIvec3 {
+    int v, t, n;
+} TRMIvec3;
+
+
 int ParseVertex(char* s, float *f1, float *f2, float *f3)
 {
     if (3 != sscanf(s, "v %f %f %f", f1, f2, f3))
@@ -80,15 +86,15 @@ int LoadModel(TRModel *model, char *filename)
 
     if (model->vtxcount > 0)
     {
-        model->vtx = malloc(sizeof(TRMFvec3) * model->vtxcount);
+        model->vtx = malloc(sizeof(TRVec3f) * model->vtxcount);
     }
     if (model->texcount > 0)
     {
-        model->tex = malloc(sizeof(TRMFvec3) * model->texcount);
+        model->tex = malloc(sizeof(TRVec3f) * model->texcount);
     }
     if (model->nrmcount > 0)
     {
-        model->nrm = malloc(sizeof(TRMFvec3) * model->nrmcount);
+        model->nrm = malloc(sizeof(TRVec3f) * model->nrmcount);
     }
 
     int v = 0;
@@ -100,9 +106,8 @@ int LoadModel(TRModel *model, char *filename)
     {
         if (0 == ParseVertex(linebuf, &t1, &t2, &t3) )
         {
-            //y flip the model
             model->vtx[v].x = t1;
-            model->vtx[v].y = -1.0 * t2;
+            model->vtx[v].y = t2;
             model->vtx[v].z = t3;
             v++;
         }
