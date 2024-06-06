@@ -30,13 +30,16 @@ typedef struct TRContext {
     int     height;
     TRColor clearcolor;
     TRColor color;
-    uint8_t *data;
+    float   cleardepth;
+    float   *colorbuffer;
+    float   *depthbuffer;
 } TRContext;
 
 TRContext * CreateTinyRenderer(int width, int height);
 void SetClearColor(TRContext *tr, float r, float g, float b, float a);
 void SetColor(TRContext *tr, float r, float g, float b, float a);
 void Clear(TRContext *tr);
+void ClearDepth(TRContext *tr);
 void Draw(TRContext *ctx);
 
 #endif /* tinyrenderer_h */

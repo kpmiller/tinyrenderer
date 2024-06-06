@@ -74,7 +74,7 @@
     if (self.updating)
         return;
 
-    if ((self.ctx == NULL) || (self.ctx->data == NULL))
+    if ((self.ctx == NULL) || (self.ctx->colorbuffer == NULL))
     {
         self.image.image = nil;
         return;
@@ -91,7 +91,7 @@
     uint8_t *pixels = (uint8_t*) malloc(w*h*4);
     memset(pixels, 0x334455FF, w*h*4);
     uint8_t *p = pixels;
-    float *fb = (float*) self.ctx->data;
+    float *fb  = self.ctx->colorbuffer;
     
     //y-flip here
     for (int JJ = h-1; JJ>=0; JJ--)
