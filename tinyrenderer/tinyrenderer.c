@@ -232,7 +232,7 @@ void Triangle(TRContext *tr, TRVec3f vv0, TRVec3f vv1, TRVec3f vv2, int wirefram
 
 //        printf("%d %d   %d %d   %d %d\n", v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y);
 //        printf("bbox: %d %d   %d %d\n", bb0.x, bb0.y, bb1.x, bb1.y);
-
+        FILE *f = fopen("/tmp/stdout.csv", "w");
         for (int JJ=bb0.y; JJ<bb1.y; JJ++)
         {
             for (int II=bb0.x; II<bb1.x; II++)
@@ -246,18 +246,19 @@ void Triangle(TRContext *tr, TRVec3f vv0, TRVec3f vv1, TRVec3f vv2, int wirefram
                     continue;
                 }
 //                printf("in: %d %d  %f %f %f\n", II, JJ, bc.x, bc.y, bc.z);
-                
+                fprintf(f, "%f,%f,%f,%f,%f\n", (float)II, (float)JJ, bc.x, bc.y, bc.z);
                 float z = v[0].z * bc.x + v[1].z * bc.y + v[2].z * bc.z;
                 float *depth = &tr->depthbuffer[JJ*tr->width | II];
                 if (z > *depth)
                 {
                     *depth = z;
-                    printf("%f,%f,%f\n",(float)II,(float)JJ,z);
+//                    printf("%f,%f,%f\n",(float)II,(float)JJ,z);
                     SetColor(tr, z, z, z, 1.0);
                     SetPixel(tr, II, JJ);
                 }
             }
         }
+        fclose(f);
 #ifdef BOUNDING_BOX
         SetColor(tr, 1.0, 0.0, 1.0, 1.0);
         SetPixel(tr, bb0.x, bb0.y);
